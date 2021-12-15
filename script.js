@@ -1,25 +1,13 @@
 const medee = document.getElementById("medee");
-
 var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200){
-        myFunction(this);
-        const medeenuud = document.querySelectorAll(".btn");
-        medeenuud.forEach(medee => {
-            medee.addEventListener("click", () => {
-
-                let i = medee.dataset.i;
-
-                if (!medee.classList.contains("active")){
-                    medee.classList.add("active");
-                    presentMedee(this, i);
-                } else {
-                    medee.classList.remove("active");
-                    deleteMedee(i);
-                }
-            })
-        })
-
+        if(window.location.href.includes("index.html")){
+            myFunction(this);
+        } else {
+            var medeeNo = medeeCookie();
+            presentMedee(this, medeeNo);
+        }
     }
 }
 xmlhttp.open("GET", "file.xml", true);
@@ -27,13 +15,12 @@ xmlhttp.send();
 
 function presentMedee(xml, i){
     var xmlDoc = xml.responseXML;
+    let item = xmlDoc.getElementsByTagName("item");
     var text = "";
-    x = xmlDoc.getElementsByTagName("description");
-    text += x[i].innerHTML;
-    const news = document.querySelectorAll(".subMedee");
-    news[i].innerHTML = text;
-    let btn = document.querySelectorAll(".btn");
-    btn[i].innerHTML = "Устгах";
+    text += "<h1>" + item[i].getElementsByTagName("title")[0].childNodes[0].nodeValue + "</h1>" + "<p class='p'>"
+    + item[i].getElementsByTagName("description")[0].childNodes[1].nodeValue + "</p>";
+    const main = document.querySelector("#main");
+    main.innerHTML = text;
     // document.getElementById("subMedee").innerHTML = text;
 }
 
@@ -85,9 +72,9 @@ function myFunction(xml) {
     var xmlDoc = xml.responseXML;
     var text = "";
     x = xmlDoc.getElementsByTagName("item");
-    for (i = 0; i<x.length; i++) { 
+    for (i = 0; i < x.length; i++) { 
       text += `<div class='medeenuud'>` + "<div class='title'>"+x[i].getElementsByTagName("title")[0].childNodes[0].nodeValue + "</div>" + 
-      `<button class='btn' data-i=${i}>Цааш унших</button>` + `<div class='subMedee' data-i = '${i}'></div>` + "</div>";
+      `<a onclick="aliMedee(${i})" href="medee.html" class='btn' data-i=${i}>Цааш унших</a>` +"</div>";
     }
     let medee = document.getElementById("medee");
     if (medee){
@@ -95,6 +82,21 @@ function myFunction(xml) {
     }
   }
 
-function displayD(i) {
-    document.getElementById("subMedee").innerHTML = x[i].textContent;
+function medeeCookie(){
+    return document.cookie
 }
+function aliMedee(medeeDugaar){
+    document.cookie = medeeDugaar;
+}
+function randomMedee(){
+    var randomMedeeNo = Math.floor(Math.random() * 30);
+    console.log(randomMedeeNo)
+    document.cookie = randomMedeeNo;
+}
+
+// const randomBtn = document.querySelector("#random");
+// console.log(randomBtn)
+// randomBtn.addEventListener("click", ()=> {
+//     console.log("hello")
+//     // randomMedee();
+// })
